@@ -1,5 +1,10 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1= 'VTS Lab Access Control'
+  p Here you can control our labratory lock
+  
+  h3
+    button(onClick=`onUnlockClicked()`)='Unlock'
+    span='Status: '
+    span(id="status")='Locked'
