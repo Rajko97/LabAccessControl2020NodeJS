@@ -1,7 +1,6 @@
 const socket = io();
-const sessionId = "123";
-
 function onUnlockClicked() {
+  let token = document.getElementById("mac").value;
   socket.emit("unlock-req", sessionId);
 }
 

@@ -3,7 +3,11 @@ extends layout
 block content
   h1= 'VTS Lab Access Control'
   p Here you can control our labratory lock
-  
+  p
+    span='MAC Adress:'
+    input(id="mac" type="text" value='14:5f:94:f5:0b:ee')
+
+
   h3
     button(onClick=`onUnlockClicked()`)='Unlock'
     span='Status: '
