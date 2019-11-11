@@ -3,6 +3,7 @@ const router = express.Router();
 const { check, validationResult } = require("express-validator");
 const usersModel = require("../model/users");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 router.post("/", [
   check("username")
@@ -33,7 +34,10 @@ async function handleRequest(req, res, next) {
     if (match) {
       delete user["password"];
       if (MACAddress === user.MACAddress) {
-        user["token"] = "123456789";
+        user["token"] = jwt.sign(
+          { MACAddress: MACAddress, rank: user.rank },
+          "Psst!ThisIsASecret"
+        );
         return res.json(user);
       } else {
         return res.status(401).send("UnauthorzedDevice");

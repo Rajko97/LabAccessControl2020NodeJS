@@ -8,6 +8,7 @@ a {
 }
 
 .header {
+  text-align: center;
   padding-bottom: 40px;
 }
 .flex {
@@ -18,4 +19,19 @@ a {
 }
 #response {
   width: 150px;
+}
+#loginResponse {
+  white-space: nowrap;
+}
+#usernamePref,
+#passwordPref,
+#macPref {
+  display: inline-block;
+  width: 100px;
+  text-align: center;
+  padding-bottom: 8px;
+}
+#btnLogin {
+  width: 150px;
+  margin-left: 50px;
 }

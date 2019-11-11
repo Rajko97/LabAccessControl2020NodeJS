@@ -3,12 +3,12 @@ const socket = io();
 const userElement = document.getElementById("username");
 const passElement = document.getElementById("password");
 const macElement = document.getElementById("mac");
+const tokenElement = document.getElementById("token");
 
 const loginResElement = document.getElementById("loginResponse");
 
 function onUnlockClicked() {
-  let token = document.getElementById("mac").value;
-  socket.emit("unlock-req", token);
+  socket.emit("unlock-req", tokenElement.value);
 }
 
 socket.on("unlock-res", data => {

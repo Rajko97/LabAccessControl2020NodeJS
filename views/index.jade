@@ -7,21 +7,25 @@ block content
 
   .flex
     .sameRow
+      h2='Unlock'
       p
-        span='MAC Adress:'
-        input(id="mac" type="text" value='14:5f:94:f5:0b:ee')
+        span='Token:'
+        input(id="token" type="text" value='')
         button(onClick=`onUnlockClicked()`)='Unlock'
       h3
         span='Status: '
         span(id="status")='Locked'
     .sameRow
       h2= `Login`
-      span='username:'
+      div(id='usernamePref')='username:'
       input(id="username", type="text", value="milan.rajkovic")
-      span='password:'
+      br
+      div(id='passwordPref')='password:'
       input(id="password", type="text", value="appsteam2020")
-      button(onClick=`onLoginClicked()`)='Log In'
-      h3
-        span='Response: '
-        pre(id="loginResponse")
-        
+      br
+      div(id='macPref')='MAC Adress:'
+      input(id="mac" type="text" value='14:5f:94:f5:0b:ee')
+      br
+      button(id="btnLogin", onClick=`onLoginClicked()`)='Log In'
+      h3 Response:
+      textarea(id="loginResponse", cols="45", rows="4")
