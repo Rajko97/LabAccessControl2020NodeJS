@@ -9,7 +9,7 @@ const userScheme = new mongoose.Schema({
     type: String,
     required: true
   },
-  MACAdress: {
+  MACAddress: {
     type: String,
     required: true
   },
