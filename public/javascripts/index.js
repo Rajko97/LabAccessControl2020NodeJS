@@ -1,7 +1,14 @@
 const socket = io();
+
+const userElement = document.getElementById("username");
+const passElement = document.getElementById("password");
+const macElement = document.getElementById("mac");
+
+const loginResElement = document.getElementById("loginResponse");
+
 function onUnlockClicked() {
   let token = document.getElementById("mac").value;
-  socket.emit("unlock-req", sessionId);
+  socket.emit("unlock-req", token);
 }
 
 socket.on("unlock-res", data => {
@@ -9,3 +16,22 @@ socket.on("unlock-res", data => {
   const element = document.getElementById("status");
   element.innerText = message;
 });
+
+function onLoginClicked() {
+  console.log("onLoginC");
+  const username = userElement.value;
+  const password = passElement.value;
+  const MACAddress = macElement.value;
+
+  $.ajax({
+    type: "POST",
+    url: "/login",
+    data: { username: username, password: password, MACAddress: MACAddress },
+    success: data => {
+      loginResElement.innerText = JSON.stringify(data, undefined, 2);
+    },
+    error: data => {
+      loginResElement.innerText = JSON.stringify(data, undefined, 2);
+    }
+  });
+}

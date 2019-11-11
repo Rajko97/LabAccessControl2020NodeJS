@@ -1,14 +1,27 @@
 extends layout
 
 block content
-  h1= 'VTS Lab Access Control'
-  p Here you can control our labratory lock
-  p
-    span='MAC Adress:'
-    input(id="mac" type="text" value='14:5f:94:f5:0b:ee')
+  .header
+    h1= 'VTS Lab Access Control'
+    p Here you can control our labratory lock
 
-
-  h3
-    button(onClick=`onUnlockClicked()`)='Unlock'
-    span='Status: '
-    span(id="status")='Locked'
+  .flex
+    .sameRow
+      p
+        span='MAC Adress:'
+        input(id="mac" type="text" value='14:5f:94:f5:0b:ee')
+        button(onClick=`onUnlockClicked()`)='Unlock'
+      h3
+        span='Status: '
+        span(id="status")='Locked'
+    .sameRow
+      h2= `Login`
+      span='username:'
+      input(id="username", type="text", value="milan.rajkovic")
+      span='password:'
+      input(id="password", type="text", value="appsteam2020")
+      button(onClick=`onLoginClicked()`)='Log In'
+      h3
+        span='Response: '
+        pre(id="loginResponse")
+        
