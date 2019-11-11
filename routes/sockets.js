@@ -1,49 +1,73 @@
-const arp = require("../controller/arp");
 const jwt = require("jsonwebtoken");
-
-let isDoorLocked = 1;
+const arp = require("../controller/arp");
+const doorLock = require("../controller/door-lock");
+const constants = require("../controller/constants");
 
 //SOCKET ROUTES:
 module.exports = {
   handleRequests: io => {
     io.sockets.on("connection", socket => {
+      /**
+       * Unlocks the door
+       * * @param
+       * "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e..."
+       */
       socket.on("unlock-req", data => {
-        onUnlockRequestEvent(io, socket, data);
+        attemptToUnlock(data, (err, onUnlocked) => {
+          if (err) {
+            return io.to(socket.id).emit("unlock-res", { message: err });
+          }
+          socket.emit("unlock-res", {
+            time: constants.durationOpenDoor,
+            message: "Unlocked"
+          });
+          onUnlocked
+            .then(() => {
+              socket.emit("unlock-res", { message: "Locked" });
+            })
+            .catch(() => {
+              return io
+                .to(socket.id)
+                .emit("unlock-res", { message: "DoorIsBusy" });
+            });
+        });
+      });
+      /**
+       * CheckIn
+       * * @param
+       * "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e..."
+       */
+      socket.on("checkIn", data => {
+        onCheckIn(io, socket, data);
+      });
+      socket.on("checkOut", data => {
+        onCheckOut(io, socket, data);
+      });
+      socket.on("getActiveMembers", data => {
+        onGetActiveMembers(io, socket, data);
       });
     });
   }
 };
 
-function onUnlockRequestEvent(io, socket, token) {
-  let errMessage = "";
+function attemptToUnlock(token, callback) {
+  let errMessage;
   if (token) {
-    if (isDoorLocked) {
-      let decoded;
-      try {
-        decoded = jwt.verify(token, "Psst!ThisIsASecret");
-      } catch (e) {}
-      if (decoded) {
-        if (arp.isConnected(decoded.MACAddress)) {
-          isDoorLocked = 0;
-          socket.emit("unlock-res", { time: 4000, message: "Unlocked" });
-          //ToDo set pin 11 HIGH
-          setTimeout(() => {
-            isDoorLocked = 1;
-            //ToDo set pin 11 LOW
-            socket.emit("unlock-res", { time: null, message: "Locked" });
-          }, 4000);
-          return;
-        } else {
-          errMessage = "WrongNetwork";
-        }
+    let decoded;
+    try {
+      decoded = jwt.verify(token, constants.jwtSecret);
+    } catch (e) {}
+    if (decoded) {
+      if (arp.isConnected(decoded.MACAddress)) {
+        return callback(errMessage, doorLock.unlock());
       } else {
-        errMessage = "InvalidToken";
+        errMessage = "WrongNetwork";
       }
     } else {
-      errMessage = "DoorIsBusy";
+      errMessage = "InvalidToken";
     }
   } else {
     errMessage = "BadRequest";
   }
-  io.to(socket.id).emit("unlock-res", { message: errMessage });
+  return callback(errMessage, null);
 }

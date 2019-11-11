@@ -4,6 +4,7 @@ const { check, validationResult } = require("express-validator");
 const usersModel = require("../model/users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const constants = require("../controller/constants");
 
 router.post("/", [
   check("username")
@@ -36,7 +37,7 @@ async function handleRequest(req, res, next) {
       if (MACAddress === user.MACAddress) {
         user["token"] = jwt.sign(
           { MACAddress: MACAddress, rank: user.rank },
-          "Psst!ThisIsASecret"
+          constants.jwtSecret
         );
         return res.json(user);
       } else {
