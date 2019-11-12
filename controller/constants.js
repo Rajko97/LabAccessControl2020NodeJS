@@ -1,4 +1,4 @@
-const MONGODB_DN_NAME = "accessControl";
+const MONGODB_DN_NAME = "labAccessControl";
 const MONGODB_URL = "mongodb://localhost:27017/";
 
 module.exports = {

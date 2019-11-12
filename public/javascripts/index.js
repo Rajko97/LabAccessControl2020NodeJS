@@ -25,7 +25,7 @@ function onLoginClicked() {
 
   $.ajax({
     type: "POST",
-    url: "/login",
+    url: "users/login",
     data: { username: username, password: password, MACAddress: MACAddress },
     success: data => {
       loginResElement.innerText = JSON.stringify(data, undefined, 2);
