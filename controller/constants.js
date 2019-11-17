@@ -5,5 +5,6 @@ module.exports = {
   durationOpenDoor: 4000,
   mongodbUrlDB: MONGODB_URL,
   mongodbName: MONGODB_DN_NAME,
-  jwtSecret: "youShouldNotKnowThis -.-' "
+  jwtSecret: "youShouldNotKnowThis -.-' ",
+  cronJobRefreshArpTime: 5000
 };

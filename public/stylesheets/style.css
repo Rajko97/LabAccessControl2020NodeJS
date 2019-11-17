@@ -35,3 +35,15 @@ a {
   width: 150px;
   margin-left: 50px;
 }
+.toRight {
+  position: relative;
+  width: 65%;
+}
+.btnRight {
+  position: absolute;
+  right: 10px;
+}
+
+.lessRight {
+  right: 90px;
+}

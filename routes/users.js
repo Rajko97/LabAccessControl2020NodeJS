@@ -20,7 +20,7 @@ router.post("/login", (req, res, next) => {
       if (err === "user" || err === "password") {
         return res.status(400).send("IncorrectUsernameOrPassword");
       }
-      if (err === "") {
+      if (err === "db") {
         return res.status(503).send("DBServiceUnavailable");
       }
     }

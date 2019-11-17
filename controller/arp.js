@@ -1,6 +1,7 @@
 const arp = require("@network-utils/arp-lookup");
 
 let macDevices = [];
+updateMacList();
 setInterval(updateMacList, 5000);
 
 function updateMacList() {

@@ -7,24 +7,34 @@ block content
 
   .flex
     .sameRow
-      h2='Unlock'
-      p
-        span='Token:'
-        input(id="token" type="text" value='')
-        button(onClick=`onUnlockClicked()`)='Unlock'
-      h3
-        span='Status: '
+      h2='Socket'
+      span='Token:'
+      input(id="token" type="text" value='')
+    
+      h3.toRight
+        span='Door: '
         span(id="status")='Locked'
+        button(class="btnRight" onClick=`onUnlockClicked()`)='Unlock'     
+      h3.toRight
+        span='CheckIn: '
+        span(id='checkStatus')='Outside'
+        button(class="btnRight lessRight" onClick='onCheckInClicked()')='CheckIN'
+        button(class="btnRight" onClick='onCheckOutClicked()')='CheckOut'
+      h3.toRight
+        span='Current in lab:'
+        button(class="btnRight" onClick='onRefreshUsersClicked()')='Refresh'
+        ul(id='currentInLabList')
+        
     .sameRow
       h2= `Login`
       div(id='usernamePref')='username:'
-      input(id="username", type="text", value="milan.rajkovic")
+      input(id="username", type="text", value="stefan.jovanovic")
       br
       div(id='passwordPref')='password:'
       input(id="password", type="text", value="appsteam2020")
       br
       div(id='macPref')='MAC Adress:'
-      input(id="mac" type="text" value='14:5f:94:f5:0b:ee')
+      input(id="mac" type="text" value='b8:97:5a:65:01:e1')
       br
       button(id="btnLogin", onClick=`onLoginClicked()`)='Log In'
       h3 Response:

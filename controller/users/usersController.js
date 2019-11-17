@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const attemptLogin = async function(username, password, MACAddress, callback) {
   let user;
   try {
-    user = await getMatchingUser(username);
+    user = await getMatchingUserByUsername(username);
   } catch (e) {
     return callback("db", null); //throw e
   }
@@ -30,7 +30,7 @@ const attemptLogin = async function(username, password, MACAddress, callback) {
   callback(null, user);
 };
 
-function getMatchingUser(username) {
+const getMatchingUserByUsername = username => {
   return new Promise(function(resolve, reject) {
     usersModel.findOne({ username: username }, (err, user) => {
       if (err) {
@@ -39,8 +39,20 @@ function getMatchingUser(username) {
       resolve(JSON.parse(JSON.stringify(user)));
     });
   });
-}
+};
+
+const getMatchingUserByMACAddress = MACAddress => {
+  return new Promise(function(resolve, reject) {
+    usersModel.findOne({ MACAddress: MACAddress }, (err, user) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(JSON.parse(JSON.stringify(user)));
+    });
+  });
+};
 
 module.exports = {
-  attemptLogin: attemptLogin
+  attemptLogin: attemptLogin,
+  getMatchingUserByMACAddress: getMatchingUserByMACAddress
 };
