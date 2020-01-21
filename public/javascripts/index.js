@@ -1,18 +1,18 @@
-const socket = io();
+var socket = io();
 
 const userElement = document.getElementById("username");
 const passElement = document.getElementById("password");
 const macElement = document.getElementById("mac");
 const tokenElement = document.getElementById("token");
 
-const loginResElement = document.getElementById("loginResponse");
+var loginResElement = document.getElementById("loginResponse");
 
 function onUnlockClicked() {
   socket.emit("unlock-req", tokenElement.value);
 }
 
 function onRefreshUsersClicked() {
-  socket.emit("getActiveMembers", tokenElement.value);
+  socket.emit("getActiveMembers", tokenElement.value); 
 }
 
 function onCheckInClicked() {
@@ -87,7 +87,7 @@ function onLoginClicked() {
     data: { username: username, password: password, MACAddress: MACAddress },
     success: data => {
       loginResElement.innerText = JSON.stringify(data, undefined, 2);
-      tokenElement.value = JSON.parse(JSON.stringify(data)).token;
+      tokenElement.value = JSON.parse(JSON.stringify(data)).uniqueToken;
     },
     error: data => {
       loginResElement.innerText = JSON.stringify(data, undefined, 2);

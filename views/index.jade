@@ -6,7 +6,7 @@ block content
     p Here you can control our labratory lock
 
   .flex
-    .sameRow
+    .sameRow.longer
       h2='Socket'
       span='Token:'
       input(id="token" type="text" value='')
@@ -28,14 +28,23 @@ block content
     .sameRow
       h2= `Login`
       div(id='usernamePref')='username:'
-      input(id="username", type="text", value="stefan.jovanovic")
+      input(id="username", type="text", value="milan.rajkovic")
       br
       div(id='passwordPref')='password:'
-      input(id="password", type="text", value="appsteam2020")
+      input(id="password", type="text", value="vts2020")
       br
       div(id='macPref')='MAC Adress:'
-      input(id="mac" type="text" value='b8:97:5a:65:01:e1')
+      input(id="mac" type="text" value='74:EB:80:B1:75:DE')
       br
       button(id="btnLogin", onClick=`onLoginClicked()`)='Log In'
       h3 Response:
       textarea(id="loginResponse", cols="45", rows="4")
+    
+    .sameRow
+      h2= `MACChange`
+      ul(id='macChangeList')
+        each request in requestList
+          li(id=request.username)
+            span=`${request.username} - ${request.requestedMACAddress}`
+            button.approveBtn="Approve"
+            button.rejectBtn="Reject"

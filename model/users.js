@@ -11,7 +11,9 @@ const userScheme = new mongoose.Schema({
   },
   MACAddress: {
     type: String,
-    required: true
+  },
+  requestedMACAddress : {
+    type : String 
   },
   name: {
     type: String,
@@ -35,6 +37,10 @@ const userScheme = new mongoose.Schema({
   memberFrom: {
     type: Date,
     default: Date.now()
+  },
+  firebaseToken: {
+    type: String,
+    required: false
   }
 });
 

@@ -17,6 +17,10 @@ a {
 .sameRow {
   width: 100%;
 }
+
+.longer {
+  width: 140%;
+}
 #response {
   width: 150px;
 }
@@ -46,4 +50,14 @@ a {
 
 .lessRight {
   right: 90px;
+}
+
+li {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+ul {
+  overflow-y: auto;
+  max-height: 350px;
 }
