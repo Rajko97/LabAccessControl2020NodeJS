@@ -3,7 +3,7 @@ const constants = require("../../controller/constants");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const socket = require("../socket");
-const admin = require("firebase-admin");
+const firebase = require("../firebase");
 
 const attemptLogin = async function(username, password, MACAddress, callback) {
   //console.log(bcrypt.hashSync("vts2020", 10))
@@ -28,7 +28,8 @@ const attemptLogin = async function(username, password, MACAddress, callback) {
     constants.jwtSecret
   );
 
-  if(MACAddress === user.MACAddress) {
+  await deleteFirebaseToken(username);
+  if(MACAddress === user.MACAddress || user.rank == "coordinator") {
     user["doorPermission"] = true;
   } else {
     user["doorPermission"] = false;
@@ -60,6 +61,10 @@ const getMatchingUserByMACAddress = MACAddress => {
   });
 };
 
+const deleteFirebaseToken = async (username) => {
+  await usersModel.collection.updateOne({username:username}, {$unset: {firebaseToken:"", notificationApprovedFailedToSend:""}});
+}
+
 const saveRequestedMac = (username, newMACAddress) => {
   usersModel.collection.updateOne({username:username}, {$set: {requestedMACAddress: newMACAddress}});
   const io = socket.getio()
@@ -70,29 +75,11 @@ const approveRequestedMac = (username, callback) => {
   usersModel.collection.updateOne({username:username}, {$rename: {requestedMACAddress : 'MACAddress'}}, (err, data) => {
     callback(err);
     getMatchingUserByUsername(username).then(data => {
-      // admin.messaging().sendToDevice(data.firebaseToken, {data: {data1:"Hello"}}, {priority: "high", timeToLive: 60*60*24})
-      //   .then(response => {
-      //     console.log("success sent message", response);
-      //   })
-      //   .catch(error => {
-      //     console.log("Error sending:", error);
-      //   });
-      const message = {
-        /*notification: {
-          title: "VTŠ Apps Team",
-          body: "Vaš uređaj je odobren. Možete da koristite aplikaciju!"
-        },*/
-        data: {
-          "access": "true"
-        }
+      if(!data.firebaseToken) {
+        usersModel.collection.updateOne({username:username}, {$set: {notificationApprovedFailedToSend: true}});
+        return;  
       }
-      admin.messaging().sendToDevice(data.firebaseToken, message)
-        .then(data => {
-          console.log("succ sent: ", data);
-        })
-        .catch(err => {
-          console.log("err ", err)
-        });
+      firebase.sendApproveNotificationTo(data.firebaseToken)
     });
   });
 }
@@ -114,7 +101,7 @@ const getAllMACChangeRequests = () => {
   });
 };
 
-const updateFireBaseToken = (token, newToken, callback) => {
+const updateFireBaseToken = async (token, newToken, callback) => {
   let decoded;
   try {
     decoded = jwt.verify(token, constants.jwtSecret);
@@ -123,9 +110,28 @@ const updateFireBaseToken = (token, newToken, callback) => {
   }
   if (!decoded)
     return callback("InvalidToken")
-
+  
+  await checkForUnsentFirebaseNotification(decoded.username, newToken);
   usersModel.collection.updateOne({username:decoded.username}, {$set: {firebaseToken: newToken}});
   return callback(null);
+}
+
+const checkForUnsentFirebaseNotification = async (username, newToken) => {
+  let user;
+  try {
+    user = await getMatchingUserByUsername(username);
+  } catch (e) {
+    return;
+  }
+  if (!user) {
+    return;
+  }
+  if(!user.firebaseToken) {
+    if(user.notificationApprovedFailedToSend) {
+      firebase.sendApproveNotificationTo(newToken);
+      await usersModel.collection.updateOne({username:username}, {$unset: {notificationApprovedFailedToSend:""}});
+    }
+  }
 }
 
 module.exports = {

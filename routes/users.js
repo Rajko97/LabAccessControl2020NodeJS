@@ -23,6 +23,7 @@ router.post("/login", (req, res, next) => {
       if (err === "db") {
         return res.status(503).send("DBServiceUnavailable");
       }
+      return;
     }
     res.json(user);
   });

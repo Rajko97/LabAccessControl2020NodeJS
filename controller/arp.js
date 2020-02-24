@@ -6,7 +6,7 @@ setInterval(updateMacList, 5000);
 
 function updateMacList() {
   arp.getTable().then(data => {
-    macDevices = data.map(element => element["mac"]);
+    macDevices = data.map(element => element["mac"].toUpperCase());
   });
 }
 

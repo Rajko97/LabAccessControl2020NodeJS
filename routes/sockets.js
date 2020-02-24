@@ -44,9 +44,10 @@ module.exports = {
        * toSender {message: ""} => [WrongNetork | InvalidToken | BadRequest]
        * toAll {message: "12:34:56:78:9A"}
        */
-      //let tokenForDisconnect;
+      let tokenForDisconnect;
       socket.on("checkIn", token => {
-        //tokenForDisconnect = token;
+        tokenForDisconnect = token;
+        console.log("checkIn", token)
         currentlyInLab.checkIn(token, (err, user) => {
           if (err)
             return io.to(socket.id).emit("checkIn-res", { message: err });
@@ -87,15 +88,14 @@ module.exports = {
           currentlyInLab.getAllUsersInLab()
         );
       });
-      //Kod radi ali je suvisan jer se izvrsava jos jedan proces koji proverava ARP
-      // socket.on("disconnect", socket => {
-      //   if (!tokenForDisconnect) return;
-      //   currentlyInLab.checkOut(tokenForDisconnect, (err, user) => {
-      //     if (err) return;
-      //     tokenForDisconnect = null;
-      //     io.emit("checkOut-res", { message: user });
-      //   });
-      // });
+      socket.on("disconnect", socket => {
+        if (!tokenForDisconnect) return;
+        currentlyInLab.checkOut(tokenForDisconnect, (err, user) => {
+          if (err) return;
+          tokenForDisconnect = null;
+          io.emit("checkOut-res", { message: user });
+        });
+      });
     });
   }
 };
