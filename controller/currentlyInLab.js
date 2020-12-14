@@ -1,6 +1,7 @@
 const arp = require("./arp");
 const jwt = require("jsonwebtoken");
 const constants = require("./constants");
+const findUserDataByMacAddress = require("./users/usersController").findMatchingUserByMACAddress
 
 let users = []; /*MacAddresses*/
 let cronJobs = []; /*[{job: "", MacAddress: ""} ]*/
@@ -38,8 +39,7 @@ module.exports = {
       MACAddress: decoded.MACAddress
     });
   },
-  checkIn: (token, callback) => {
-    let decoded;
+  checkIn: async (token, callback) => { let decoded;
     try {
       decoded = jwt.verify(token, constants.jwtSecret);
     } catch (e) {
@@ -51,8 +51,17 @@ module.exports = {
     if (!arp.isConnected(decoded.MACAddress)) {
       return callback("WrongNetwork", null);
     }
-    users.unshift(decoded.MACAddress);
-    return callback(false, decoded.MACAddress);
+    if(decoded.rank === "coordinator") {
+      users.unshift(decoded.MACAddress);
+    } else {
+      users.push(decoded.MACAddress)
+    }
+    try {
+      let userData = (({username, name, lastName, rank}) => ({username, name, lastName, rank})) (await findUserDataByMacAddress(decoded.MACAddress));
+      return callback(false, decoded.username, userData)
+    } catch(err) {
+      return callback("UnknownPerson", null);
+    }
   },
   checkOut: (token, callback) => {
     let decoded;
@@ -65,8 +74,14 @@ module.exports = {
     users = users.filter(item => item != decoded.MACAddress);
     return callback(
       length != users.length ? false : "NotFound",
-      decoded.MACAddress
+      decoded.username
     );
   },
-  getAllUsersInLab: () => users
+  getAllUsersInLab: () => {
+    return new Promise(async (res, rej) => {
+      await Promise.all(users.map((user) => findUserDataByMacAddress(user)))
+      .then(data => { res(data.map(({username, name, lastName, rank}) => ({userId:username, name, lastName, rank})))})
+      .catch(err => { res([]) })
+    });
+  }
 };

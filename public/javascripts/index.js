@@ -41,8 +41,8 @@ socket.on("checkIn-res", data => {
   ) {
     const list = document.getElementById("currentInLabList");
     const listItem = document.createElement("li");
-    listItem.setAttribute("id", data.message);
-    listItem.appendChild(document.createTextNode(data.message));
+    listItem.setAttribute("id", data.data.username);
+    listItem.appendChild(document.createTextNode(`${data.data.name} ${data.data.lastName}`));
     list.appendChild(listItem);
   }
   loginResElement.innerText = JSON.stringify(data, undefined, 2);
@@ -70,8 +70,8 @@ socket.on("getActiveMembers-res", data => {
   list.innerText = "";
   for (const user of data) {
     const listItem = document.createElement("li");
-    listItem.setAttribute("id", user);
-    listItem.appendChild(document.createTextNode(user));
+    listItem.setAttribute("id", user.userId);
+    listItem.appendChild(document.createTextNode(`${user.name} ${user.lastName}`));
     list.appendChild(listItem);
   }
 });

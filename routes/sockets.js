@@ -42,20 +42,19 @@ module.exports = {
        * "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e..." => {MACAddress: "", rank: ""}
        * * @returns
        * toSender {message: ""} => [WrongNetork | InvalidToken | BadRequest]
-       * toAll {message: "12:34:56:78:9A"}
+       * toAll {message: "username", data: {username, name, lastName, rank}}
        */
       let tokenForDisconnect;
-      socket.on("checkIn", token => {
+      socket.on("checkIn", async token => {
         tokenForDisconnect = token;
-        console.log("checkIn", token)
-        currentlyInLab.checkIn(token, (err, user) => {
+        currentlyInLab.checkIn(token, (err, userId, userData) => {
           if (err)
             return io.to(socket.id).emit("checkIn-res", { message: err });
-          io.emit("checkIn-res", { message: user });
-          currentlyInLab.startMonitoringUser(token, (err, user) => {
-            if (user) {
+          io.emit("checkIn-res", { message: "success", data : userData});
+          currentlyInLab.startMonitoringUser(token, (err, userId) => {
+            if (userId) {
               currentlyInLab.checkOut(token, (err, res) => {});
-              io.emit("checkOut-res", { message: user });
+              io.emit("checkOut-res", { message: userId });
             }
           });
         });
@@ -73,21 +72,31 @@ module.exports = {
           if (err)
             return io.to(socket.id).emit("checkOut-res", { message: err });
           //tokenForDisconnect = null;
-          io.emit("checkOut-res", { message: user });
+          io.emit("checkOut-res", { message: user});
         });
       });
       /** Returns list of users in lab
        * @param
        * * NONE
        * @returns
-       * toSender: ["12:34:56:78:9A", "AB:CD:EF:01:23", ...] or [] if empty
+       * toSender: [{userId:"username", name, lastName, rank}... ] or [] if empty
        */
       socket.on("getActiveMembers", () => {
-        io.to(socket.id).emit(
-          "getActiveMembers-res",
-          currentlyInLab.getAllUsersInLab()
-        );
+        currentlyInLab.getAllUsersInLab()
+        .then(data => {
+          io.to(socket.id).emit(
+            "getActiveMembers-res",
+            data
+          );
+        })
       });
+
+      /**Tells everyone that someone disconnected
+       * @param 
+       * * NONE
+       * @returns
+       * toEveryone: {message: username}
+      */
       socket.on("disconnect", socket => {
         if (!tokenForDisconnect) return;
         currentlyInLab.checkOut(tokenForDisconnect, (err, user) => {

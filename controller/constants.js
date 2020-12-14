@@ -1,7 +1,7 @@
 const MONGODB_DN_NAME = "labAccessControl";
 const MONGODB_URL = "mongodb://localhost:27017/";
 
-const SAMSUNG_APPS_LAB_ROUTER_MAC_ADDRESS = "14:5F:94:F5:0B:EC" // Local for testing
+const SAMSUNG_APPS_LAB_ROUTER_MAC_ADDRESS = "38:6b:1c:6e:de:88" // Local for testing 
 
 module.exports = {
   durationOpenDoor: 4000,

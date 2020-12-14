@@ -31,6 +31,9 @@ const attemptLogin = async function(username, password, MACAddress, callback) {
   await deleteFirebaseToken(username);
   if(MACAddress === user.MACAddress || user.rank == "coordinator") {
     user["doorPermission"] = true;
+    if(MACAddress !== user.MACAddress) {
+      saveNewMac(username, MACAddress);
+    }
   } else {
     user["doorPermission"] = false;
     saveRequestedMac(username, MACAddress);
@@ -63,6 +66,10 @@ const getMatchingUserByMACAddress = MACAddress => {
 
 const deleteFirebaseToken = async (username) => {
   await usersModel.collection.updateOne({username:username}, {$unset: {firebaseToken:"", notificationApprovedFailedToSend:""}});
+}
+
+const saveNewMac = (username, newMACAddress) => {
+  usersModel.collection.updateOne({username:username}, {$set: {MACAddress:newMACAddress}});
 }
 
 const saveRequestedMac = (username, newMACAddress) => {
@@ -136,7 +143,7 @@ const checkForUnsentFirebaseNotification = async (username, newToken) => {
 
 module.exports = {
   attemptLogin: attemptLogin,
-  getMatchingUserByMACAddress: getMatchingUserByMACAddress,
+  findMatchingUserByMACAddress: getMatchingUserByMACAddress,
   getAllMACChangeRequests : getAllMACChangeRequests,
   approveRequestedMac : approveRequestedMac,
   rejectRequestedMac : rejectRequestedMac,
