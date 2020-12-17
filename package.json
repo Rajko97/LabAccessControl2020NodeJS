@@ -21,8 +21,9 @@
     "morgan": "~1.9.1",
     "socket.io": "^2.2.0"
   },
-
-  "nodemonConfig" : {
-    "ignore": ["public/javascripts/*.js"]
+  "nodemonConfig": {
+    "ignore": [
+      "public/javascripts/*.js"
+    ]
   }
 }
